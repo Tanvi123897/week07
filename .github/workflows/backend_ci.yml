@@ -51,17 +51,14 @@ jobs:
           - 5433:5432
 
     steps:
-      # 1. Checkout repository
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Set up Python 3.10
       - name: Set up Python 3.10
         uses: actions/setup-python@v5
         with:
           python-version: '3.10'
 
-      # 3. Install dependencies for backend
       - name: Install dependencies
         run: |
           pip install --upgrade pip
@@ -71,7 +68,6 @@ jobs:
           done
           pip install pytest httpx
 
-      # 4. Run product_service tests
       - name: Run product_service tests
         working-directory: backend/product_service
         env:
@@ -83,7 +79,6 @@ jobs:
         run: |
           pytest tests --maxfail=1 --disable-warnings -q
 
-      # 5. Run order_service tests
       - name: Run order_service tests
         working-directory: backend/order_service
         env:
@@ -101,23 +96,22 @@ jobs:
     needs: test_and_lint_backends
 
     steps:
-      # 1. Checkout code
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      # 2. Build and push Product Service image
+      # Build and push Product Service image
       - name: Build and Push Product Service Image
         run: |
           docker build -t localhost:5000/product-service:latest ./backend/product_service/
           docker push localhost:5000/product-service:latest
 
-      # 3. Build and push Order Service image
+      # Build and push Order Service image
       - name: Build and Push Order Service Image
         run: |
           docker build -t localhost:5000/order-service:latest ./backend/order_service/
           docker push localhost:5000/order-service:latest
 
-      # 4. Build and push Frontend Service image
+      # Build and push Frontend Service image
       - name: Build and Push Frontend Service Image
         run: |
           docker build -t localhost:5000/frontend-service:latest ./frontend/
